@@ -1,16 +1,19 @@
-import {ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {AuthFacade} from '../../states/facade/authFacade';
-import {buttonClickedAnimations} from '../../animations/loginButtons';
-import {InputControls} from '../../interfaces/inputControls';
-import {User} from '../../interfaces/user';
+import {AuthFacade} from '../../states/facade/auth.facade';
+import {buttonClickedAnimation} from '../../animations/button-click.animation';
+import {IInputControl} from '../../models/interfaces/input-control.model.i';
+import {IUser} from '../../models/interfaces/user.model.i';
+import {Subject} from 'rxjs';
+import {take, takeUntil} from 'rxjs/operators';
+import {Language} from '../../models/configs/language-options.model';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
   animations: [
-    buttonClickedAnimations
+    buttonClickedAnimation
   ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.Default,
@@ -19,28 +22,36 @@ import {User} from '../../interfaces/user';
   }
 })
 
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
+  private readonly _onDestroy = new Subject();
   loginAndRegisterForm: FormGroup;
   errors: string;
-  email: InputControls;
-  password: InputControls;
+  email: IInputControl;
+  password: IInputControl;
   registerClicked = false;
   loginClicked = false;
 
   constructor(
-    private authFacade: AuthFacade,
-  ) {}
+    private readonly _authFacade: AuthFacade,
+  ) {
+  }
 
   ngOnInit(): void {
     if (localStorage.getItem('auth')) {
-      this.authFacade.login();
+      this._authFacade.login();
     }
-
     this.createFormGroup();
 
-    this.authFacade.getErrors().subscribe( (err) => {
-      this.errors = err;
-    });
+    this._authFacade.getErrors()
+      .pipe(takeUntil(this._onDestroy))
+      .subscribe((err) => {
+        this.errors = err;
+      });
+  }
+
+  ngOnDestroy(): void {
+    this._onDestroy.next();
+    this._onDestroy.complete();
   }
 
   createFormGroup(): void {
@@ -54,8 +65,8 @@ export class LoginComponent implements OnInit {
       name: 'email',
       label: 'LOGIN.EMAIL',
       errors: [
-        { name: 'required', text: 'LOGIN.ERRORS.EMAIL.REQUIRED'},
-        { name: 'email', text: 'LOGIN.ERRORS.EMAIL.INVALID'}]
+        {name: 'required', text: 'LOGIN.ERRORS.EMAIL.REQUIRED'},
+        {name: 'email', text: 'LOGIN.ERRORS.EMAIL.INVALID'}]
     };
 
     this.password = {
@@ -64,32 +75,34 @@ export class LoginComponent implements OnInit {
       label: 'LOGIN.PASSWORD',
       type: 'password',
       errors: [
-        { name: 'required', text: 'LOGIN.ERRORS.PASSWORD.REQUIRED'},
-        { name: 'minlength', text: 'LOGIN.ERRORS.PASSWORD.MINLENGTH'}]
+        {name: 'required', text: 'LOGIN.ERRORS.PASSWORD.REQUIRED'},
+        {name: 'minlength', text: 'LOGIN.ERRORS.PASSWORD.MIN_LENGTH'}]
     };
 
   }
 
-  submitLogin(): void {
-    if (!this.validateForm()) { return; }
+  async submitLogin(): Promise<void> {
+    if (!this.validateForm()) {
+      return;
+    }
 
-    const data: Partial<User> = this.getFormData();
-    this.authFacade.login(data);
+    const data: Partial<IUser> = await this.getFormData();
+    this._authFacade.login(data);
   }
 
   async submitRegister(): Promise<void> {
-    if (!this.validateForm()) { return; }
+    if (!this.validateForm()) {
+      return;
+    }
 
-    this.authFacade.getLanguage().subscribe(lang => {
-      const data: Partial<User> = this.getFormData();
-      data.language = lang;
-      this.authFacade.register(data);
-    });
+    const data: Partial<IUser> = await this.getFormData();
+
+    this._authFacade.register(data);
   }
 
   resetErrors(): void {
     if (this.errors && this.errors.length > 0) {
-      this.authFacade.addErrors('');
+      this._authFacade.addErrors('');
     }
   }
 
@@ -98,11 +111,12 @@ export class LoginComponent implements OnInit {
     return !this.loginAndRegisterForm.invalid;
   }
 
-  getFormData(): Partial<User> {
+  async getFormData(): Promise<Partial<IUser>> {
+    const language: Language = await this._authFacade.getLanguage().pipe(take(1)).toPromise();
     return {
       email: this.loginAndRegisterForm.get('email').value,
       password: this.loginAndRegisterForm.get('password').value,
-      language: ''
+      language
     };
   }
 

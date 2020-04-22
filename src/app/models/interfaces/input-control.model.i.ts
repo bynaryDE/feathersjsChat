@@ -1,9 +1,10 @@
 import {FormControl} from '@angular/forms';
+import {IInputError} from './input-error.model.i';
 
-export interface InputControls {
+export interface IInputControl {
   formControl: FormControl;
   name: string;
   label?: string;
   type?: string;
-  errors?: {name: string, text: string}[];
+  errors?: IInputError[];
 }

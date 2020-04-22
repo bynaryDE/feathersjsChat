@@ -1,6 +1,10 @@
-app-chat{
-  display: block;
+@import "chat.component.settings";
 
+app-chat {
+  display: block;
+}
+
+.app-chat {
   > .app-chat__overlay {
     background: none;
     display: flex;
@@ -18,17 +22,19 @@ app-chat{
     }
   }
 
-  >.app-chat__animation-container {
+  > .app-chat__animation-container {
 
     > .app-chat__header {
       align-items: center;
-      background: #c916a9;
-      color: #ffffff;
+      background: $chat-header-background-color;
+      color: $chat-header-font-color;
       display: flex;
-      font-size: 1.8rem;
-      font-weight: lighter;
-      letter-spacing: 0.05rem;
+      font: {
+        size: 1.75rem;
+        weight: 100;
+      }
       justify-content: center;
+      letter-spacing: 0.063rem;
       padding: 0.5rem;
       width: 100%;
 

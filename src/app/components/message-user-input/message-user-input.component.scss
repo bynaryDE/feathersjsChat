@@ -1,33 +1,38 @@
+@import "message-user-input.component.settings";
+
 app-message-user-input {
   display: block;
+}
 
-  > .app-message__input {
-    bottom: 0;
-    display: flex;
-    height: 4rem;
-    justify-content: flex-end;
-    position: absolute;
-    min-width: 100%;
+.app-message-user-input {
+  display: flex;
+  height: 4rem;
+  justify-content: flex-end;
+  min-width: 100%;
+  position: absolute; bottom: 0;
 
-    > input {
-      height: 2.5rem;
-      flex: 5;
-      font-size: 1rem;
-      margin-right: 1rem;
-      outline: none;
-      text-align: left;
-    }
+  > input {
+    flex: 5;
+    font-size: 1rem;
+    height: 2.5rem;
+    margin-right: 1rem;
+    outline: none;
+    text-align: left;
+  }
 
-    > button {
-      color: #ffffff;
-      background-color: #c916a9;
-      border: none;
-      border-radius: 5px;
-      font-size: 1rem;
-      height: 2.5rem;
-      outline: none;
-      padding: 0.1rem;
-      width: 5rem;
+  > button {
+    color: $button-font-color;
+    background-color: $button-background-color;
+    border: none;
+    border-radius: 0.313rem;
+    font-size: 1rem;
+    height: 2.5rem;
+    outline: none;
+    padding: 0.125rem;
+    width: 5rem;
+
+    &:hover {
+      background: $button-hover-background-color;
     }
   }
 }

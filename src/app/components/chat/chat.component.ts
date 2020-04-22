@@ -1,18 +1,18 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
-  Component,
+  Component, OnDestroy,
   OnInit,
   ViewEncapsulation
 } from '@angular/core';
-import { Router} from '@angular/router';
-import {Observable} from 'rxjs';
-import {FeathersService} from '../../services/feathersService/feathers.service';
-import {ChatFacade} from '../../states/facade/chatFacade';
-import {User} from '../../interfaces/user';
-import {Messages} from '../../interfaces/messages';
-import {UsersFacade} from '../../states/facade/usersFacade';
-import {fadeInAfter, fadeInOverlay} from '../../animations/fadeIn';
+import {Router} from '@angular/router';
+import {Observable, Subject} from 'rxjs';
+import {FeathersService} from '../../services/feathers-service/feathers.service';
+import {ChatFacade} from '../../states/facade/chat.facade';
+import {IUser} from '../../models/interfaces/user.model.i';
+import {IMessage} from '../../models/interfaces/message.model.i';
+import {UsersFacade} from '../../states/facade/users.facade';
+import {fadeInAfter, fadeInOverlay} from '../../animations/fade-in.animation';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-chat',
@@ -27,49 +27,44 @@ import {fadeInAfter, fadeInOverlay} from '../../animations/fadeIn';
     class: 'app-chat'
   }
 })
-export class ChatComponent implements OnInit, AfterViewInit {
-  messages: Observable<Messages[]>;
-  users: Observable<User[]> ;
+export class ChatComponent implements OnInit, OnDestroy {
+  private readonly _onDestroy = new Subject();
+  messages: Observable<IMessage[]>;
+  users: Observable<IUser[]>;
   load = false;
-  loadOtherElements = false;
+  loadOtherElements = 'hidden';
 
   constructor(
-    private router: Router,
-    private feathersService: FeathersService,
-    private chatFacade: ChatFacade,
-    private usersFacade: UsersFacade,
-  ) {}
+    private readonly _router: Router,
+    private readonly _feathersService: FeathersService,
+    private readonly _chatFacade: ChatFacade,
+    private readonly _usersFacade: UsersFacade,
+  ) {
+  }
 
-    ngOnInit(): void {
-      this.setAndConnectMessages();
-      this.setAndConnectUsers();
-    }
-
-  ngAfterViewInit(): void {
+  async ngOnInit() {
     this.load = true;
+    await this._setAndConnectMessages();
+    await this._setAndConnectUsers();
   }
 
-  setAndConnectMessages(): void {
-    this.feathersService.getMessages().subscribe( obj => {
-      this.chatFacade.addMessages(obj.data);
-    });
-    this.feathersService.getNewMessages(this.addMessage);
-    this.messages = this.chatFacade.getAllMessages();
+  ngOnDestroy() {
+    this._onDestroy.next();
+    this._onDestroy.complete();
   }
 
-  setAndConnectUsers() {
-    this.feathersService.getUsers().subscribe( obj => {
-      this.usersFacade.addUsers(obj.data);
-    });
-    this.feathersService.getNewUsers(this.addUser);
-    this.users = this.usersFacade.getAllUsers();
+
+  async _setAndConnectMessages() {
+    const messages = await this._feathersService.getMessages();
+    this._chatFacade.addMessages(messages);
+    this._feathersService.getNewMessages().pipe(takeUntil(this._onDestroy)).subscribe(message => this._chatFacade.addMessage(message));
+    this.messages = this._chatFacade.getAllMessages();
   }
 
-  addMessage = (message: Messages): void => {
-    this.chatFacade.addMessage(message);
-  }
-
-  addUser = (user: User): void => {
-    this.usersFacade.addUser(user);
+  async _setAndConnectUsers() {
+    const users = await this._feathersService.getUsers();
+    this._usersFacade.addUsers(users);
+    this._feathersService.getNewUsers().pipe(takeUntil(this._onDestroy)).subscribe(user => this._usersFacade.addUser(user));
+    this.users = this._usersFacade.getAllUsers();
   }
 }

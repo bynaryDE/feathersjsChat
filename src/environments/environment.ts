@@ -3,7 +3,12 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  FEATHERS_SETTINGS: {
+    strategy: 'local',
+    url: 'http://localhost:3030',
+    storageKey: 'auth'
+  }
 };
 
 /*

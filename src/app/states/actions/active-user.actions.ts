@@ -1,8 +1,9 @@
-import {User} from '../../interfaces/user';
+import {IUser} from '../../models/interfaces/user.model.i';
+import {Language} from '../../models/configs/language-options.model';
 
 export class UserLogin {
   static readonly type = '[User] login';
-  constructor(public payload?: Partial<User>) {}
+  constructor(public readonly payload?: Partial<IUser>) {}
 }
 
 export class UserLogout {
@@ -11,17 +12,17 @@ export class UserLogout {
 
 export class UserRegister {
   static readonly type = '[User] register';
-  constructor(public payload: Partial<User>) {}
+  constructor(public readonly payload: Partial<IUser>) {}
 }
 
 export class UserErrors {
   static readonly type = '[User] errors';
-  constructor(public payload: string) {
+  constructor(public readonly payload: string) {
   }
 }
 
 export class UserChangeLanguage {
   static readonly type = '[User] change language';
-  constructor(public payload: string) {
+  constructor(public readonly payload: Language) {
   }
 }

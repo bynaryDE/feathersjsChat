@@ -1,11 +1,15 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
-import {User} from '../../interfaces/user';
-import {AuthFacade} from '../../states/facade/authFacade';
+import {ChangeDetectionStrategy, Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
+import {AuthFacade} from '../../states/facade/auth.facade';
+import {buttonClickedAnimation} from '../../animations/button-click.animation';
+import {IUser} from '../../models/interfaces/user.model.i';
 
 @Component({
   selector: 'app-users-interface',
   templateUrl: './users-interface.component.html',
   styleUrls: ['./users-interface.component.scss'],
+  animations: [
+    buttonClickedAnimation
+  ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.Default,
   host: {
@@ -13,18 +17,19 @@ import {AuthFacade} from '../../states/facade/authFacade';
   }
 })
 export class UsersInterfaceComponent implements OnInit {
-  @Input() users: User[];
-  @Output() handleSignOut: EventEmitter<any> = new EventEmitter<any>();
+  @Input() users: IUser[];
+  signOutClicked = false;
 
   constructor(
-    private authFacade: AuthFacade,
-  ) { }
+    private readonly _authFacade: AuthFacade,
+  ) {
+  }
 
   ngOnInit(): void {
   }
 
   signOut(): void {
-    this.authFacade.logout();
+    this._authFacade.logout();
   }
 
 }

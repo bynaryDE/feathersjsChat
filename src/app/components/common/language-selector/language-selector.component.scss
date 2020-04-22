@@ -1,22 +1,37 @@
-app-language-selector{
+app-language-selector {
   display: block;
-  height: 100%;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  opacity: 1;
-
-  > .app-language-selector__options {
-    display: flex;
-
-    > select {
-      background: none;
-      border: none;
-      font-size: 1rem;
-      margin: 1rem;
-      outline: none;
-    }
-  }
 }
 
+.app-language-selector {
+  height: 100%;
+  opacity: 1;
+  position: absolute;  bottom: 0;  left: 0;
+  z-index: 3;
 
+  .app-language-selector__flag {
+    width: 1.75rem;
+  }
+
+  > .app-language-selector__container {
+    height: fit-content;
+    margin: 0.75rem;
+    position: relative; top: 0;
+    width: fit-content;
+
+    > .app-language-selector__dropdown {
+      display: flex;
+      position: relative;
+
+      > .arrow-up {
+        content: url('https://api.iconify.design/dashicons-arrow-up-alt2.svg?height=20');
+      }
+
+      > .arrow-down {
+        content: url('https://api.iconify.design/dashicons-arrow-down-alt2.svg?height=20');
+      }
+
+    }
+
+  }
+
+}

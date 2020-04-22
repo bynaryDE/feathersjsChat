@@ -1,15 +1,15 @@
-import { User} from '../../interfaces/user';
+import { IUser} from '../../models/interfaces/user.model.i';
 
 export class AddUser {
   static readonly type = '[User] Add';
 
-  constructor(public payload: User) {
+  constructor(public readonly payload: IUser) {
   }
 }
 
 export class AddUsers {
   static readonly  type = '[Users] Add';
 
-  constructor(public payload: User[]) {
+  constructor(public readonly payload: IUser[]) {
   }
 }

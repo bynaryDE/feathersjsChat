@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
-import {User} from '../../interfaces/user';
+import {IUser} from '../../models/interfaces/user.model.i';
 
 @Component({
   selector: 'app-active-users',
@@ -12,8 +12,10 @@ import {User} from '../../interfaces/user';
   }
 })
 export class ActiveUsersComponent implements OnInit {
-  @Input() users: User[];
-  constructor() { }
+  @Input() users: IUser[];
+
+  constructor() {
+  }
 
   ngOnInit(): void {
   }

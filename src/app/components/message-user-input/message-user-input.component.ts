@@ -1,10 +1,14 @@
 import {ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {FeathersService} from '../../services/feathersService/feathers.service';
+import {FeathersService} from '../../services/feathers-service/feathers.service';
+import {buttonClickedAnimation} from '../../animations/button-click.animation';
 
 @Component({
   selector: 'app-message-user-input',
   templateUrl: './message-user-input.component.html',
   styleUrls: ['./message-user-input.component.scss'],
+  animations: [
+    buttonClickedAnimation
+  ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.Default,
   host: {
@@ -13,9 +17,12 @@ import {FeathersService} from '../../services/feathersService/feathers.service';
 })
 export class MessageUserInputComponent implements OnInit {
   userInput: string;
+  sendClicked = false;
+
   constructor(
-    private feathersService: FeathersService,
-  ) { }
+    private readonly _feathersService: FeathersService,
+  ) {
+  }
 
   ngOnInit(): void {
   }
@@ -24,9 +31,11 @@ export class MessageUserInputComponent implements OnInit {
     const value: string = this.userInput;
     this.userInput = '';
 
-    if (!value || value.length === 0) { return; }
+    if (!value || value.length === 0) {
+      return;
+    }
 
-    await this.feathersService.sendMessage(value);
+    await this._feathersService.sendMessage(value);
   }
 
 }

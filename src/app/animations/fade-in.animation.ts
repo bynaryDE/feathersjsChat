@@ -5,7 +5,7 @@ export const fadeInEnter = trigger('fadeIn', [
     style({ opacity: 0}),
     animate('800ms ease-in'),
   ]),
-])
+]);
 
 export const fadeInOverlay = trigger('fadeInOverlay', [
   transition('* => true', [
@@ -20,16 +20,16 @@ export const fadeInOverlay = trigger('fadeInOverlay', [
     })),
     animate('0.8s 200ms ease-in-out', style({
       visibility: 'hidden',
-      opacity: '0',
+      opacity: 0,
       transform: 'rotate(-90deg) translateY(-100px) scale(0.3)',
     })),
   ])
 ]);
 
 export const fadeInAfter = trigger('fadeInAfter', [
-  state('true', style({opacity: 1, visibility: 'visible'})),
-  state('false', style({opacity: 0, visibility: 'hidden'})),
-  transition('false => true', [
-    animate('1.5s 2s ease-in')
+  state('hidden', style({opacity: 0, visibility: 'hidden'})),
+  state('show', style({opacity: 1, visibility: 'visible'})),
+  transition('hidden => show', [
+    animate('0.4s ease-in')
   ])
 ]);

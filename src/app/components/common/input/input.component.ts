@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
-import {ControlContainer, FormControl, FormGroupDirective} from '@angular/forms';
-import {InputControls} from '../../../interfaces/inputControls';
+import {ControlContainer, FormGroupDirective} from '@angular/forms';
+import {IInputControl} from '../../../models/interfaces/input-control.model.i';
 
 @Component({
   selector: 'app-input',
@@ -17,12 +17,13 @@ import {InputControls} from '../../../interfaces/inputControls';
   }]
 })
 export class InputComponent implements OnInit {
-  @Input() data: InputControls;
+  @Input() data: IInputControl;
 
-  inputControl: InputControls;
+  inputControl: IInputControl;
   error: string;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
     this.inputControl = this.data;
@@ -31,7 +32,9 @@ export class InputComponent implements OnInit {
   isErrorState(): boolean {
     const control = this.inputControl.formControl;
     const errors = this.inputControl.errors;
-    if (errors.length === 0) { return false; }
+    if (0 === errors.length) {
+      return false;
+    }
 
     this.setErrors();
     return !!(control && control.invalid && (control.dirty || control.touched));
